@@ -1,4 +1,10 @@
-# 3D printer configs
+# My 3D printer configs
+
+This repository contains my personal 3D printer configuration files.
+
+It is help me maintain settings across different machines or after firmware updates.
+
+Also this way I can easily update and tweak my settings via AI agents to optimize print quality and speed for my specific hardware setup.
 
 ## Hardware
 
@@ -12,11 +18,10 @@
 - **Extruder:** BMG Dual Drive (direct drive)
 - **Firmware:** Klipper (computer-controlled)
 
-
-
-# Bed Leveling Mesh
+## Bed Leveling Mesh Screw Positions
 
 Screw positions for bed leveling mesh:
+
 - Front Left: (29, 47)
 - Front Right: (199, 47)
 - Back Left: (29, 215)
