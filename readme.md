@@ -27,5 +27,8 @@ Screw positions for bed leveling mesh:
 - Back Left: (29, 215)
 - Back Right: (199, 215)
 
+## Bed plate dimensions
 
+X: 0 to 225
+Y: 20 to 235
 
