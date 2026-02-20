@@ -1,0 +1,19 @@
+services:
+  octoprint:
+    image: octoprint/octoprint:latest
+    container_name: octoprint
+    restart: unless-stopped
+    ports:
+      - 8888:80
+    devices:
+      - "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyUSB0"
+    volumes:
+      - ./octoprint_data:/octoprint
+    environment:
+      - ENABLE_MJPG_STREAMER=false
+    privileged: true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "256M"

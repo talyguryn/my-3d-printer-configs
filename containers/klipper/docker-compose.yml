@@ -1,0 +1,78 @@
+services:
+  klipper:
+    image: mkuf/klipper:latest
+    container_name: klipper
+    restart: unless-stopped
+    privileged: true
+    stdin_open: true
+    tty: true
+    environment:
+      - TZ='Europe/Moscow'
+    volumes:
+      # Mount USB device by ID for reliable identification
+      - /dev/serial/by-id/usb-Klipper_stm32g0b1xx_170014000450415339373620-if00:/dev/serial/by-id/usb-Klipper_stm32g0b1xx_170014000450415339373620-if00
+      # Explicit mounts to override VOLUME declarations in the image
+      - ./printer_data/config:/opt/printer_data/config
+      - ./printer_data/gcodes:/opt/printer_data/gcodes
+      - ./printer_data/logs:/opt/printer_data/logs
+      - ./printer_data/run:/opt/printer_data/run
+      - ./printer_data/database:/opt/printer_data/database
+      - ./printer_data/comms:/opt/printer_data/comms
+    networks:
+      - klipper_default
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+
+  moonraker:
+    image: mkuf/moonraker:latest
+    container_name: moonraker
+    restart: unless-stopped
+    depends_on:
+      - klipper
+    environment:
+      - TZ={{ klipper_timezone | default('Europe/Moscow') }}
+    ports:
+      - "7125:7125"
+    volumes:
+      # Explicit mounts to override VOLUME declarations in the image
+      - ./printer_data/config:/opt/printer_data/config
+      - ./printer_data/gcodes:/opt/printer_data/gcodes
+      - ./printer_data/logs:/opt/printer_data/logs
+      - ./printer_data/run:/opt/printer_data/run
+      - ./printer_data/database:/opt/printer_data/database
+      - ./printer_data/comms:/opt/printer_data/comms
+    networks:
+      - klipper_default
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "128M"
+
+  mainsail:
+    image: ghcr.io/mainsail-crew/mainsail:latest
+    container_name: mainsail
+    restart: unless-stopped
+    depends_on:
+      - moonraker
+    ports:
+      - "8080:80"
+    volumes:
+      - ./printer_data/config:/opt/printer_data/config
+      - ./printer_data/gcodes:/opt/printer_data/gcodes
+      - ./printer_data/logs:/opt/printer_data/logs
+      - ./printer_data/config/mainsail.json:/usr/share/nginx/html/config.json:ro
+      - ./mainsail_nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - klipper_default
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '128M'
+
+networks:
+  klipper_default:
